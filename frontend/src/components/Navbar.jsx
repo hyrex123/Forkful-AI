@@ -85,7 +85,7 @@ function Navbar({ user, logout }) {
               textDecoration: "none",
             }}
           >
-            Recipe AI
+            Forkful Ai
           </Typography>
 
           {/* --- Mobile Menu --- */}

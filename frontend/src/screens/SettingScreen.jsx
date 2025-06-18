@@ -52,10 +52,10 @@ const accordionData = [
           developer:
         </p>
         <a
-          href="mailto:honeypatkar70@gmail.com"
+          href="prcpcm@gmail.com"
           className="text-blue-600 hover:underline block mt-2"
         >
-          honeypatkar70@gmail.com
+          prcpcm@gmail.com
         </a>
         {/* Add other support links or info here */}
       </>
@@ -68,7 +68,7 @@ const accordionData = [
     content: (
       <>
         <p className="mb-2">
-          This application was crafted with passion by Honey Pathkar.
+          This application was crafted with passion by Priyanshu Raj chauhan.
         </p>
         <p className="mb-2">
           Find more projects at:{" "}
@@ -78,7 +78,7 @@ const accordionData = [
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline font-medium"
           >
-            Honey's Portfolio
+            Priyanshu's Portfolio
           </a>
           .
         </p>
@@ -90,7 +90,7 @@ const accordionData = [
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline font-medium"
           >
-            @honeypathkar
+            @priyanshu
           </a>
           .
         </p>
@@ -102,7 +102,7 @@ const accordionData = [
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline font-medium"
           >
-            @honey.jsx
+            @priyanshu
           </a>
           .
         </p>

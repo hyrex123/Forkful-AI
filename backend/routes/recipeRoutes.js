@@ -14,13 +14,47 @@ router.post("/generate", verifyToken, async (req, res) => {
 
     if (!user) return res.status(404).send("User not found");
 
+    // Validate result format
+    if (
+      !result.title ||
+      !Array.isArray(result.ingredients) ||
+      !(Array.isArray(result.instructions) || Array.isArray(result.steps))
+    ) {
+      return res.status(400).json({ error: "Invalid recipe format from AI" });
+    }
+
+    // const newRecipe = new Recipe({
+    //   title: result.title,
+    //   cuisine: result.cuisine,
+    //   ingredients: result.ingredients,
+    //   instructions: result.instructions,
+    //   createdBy: user._id,
+    // });
+    const instructionsArray = Array.isArray(result.steps)
+  ? result.steps
+  : Array.isArray(result.instructions)
+  ? result.instructions
+  : [];
+
+const normalizedSteps = instructionsArray.map((item, index) => ({
+  step: item.step || index + 1,
+  instruction: item.instruction || item.description || "",
+}));
+
     const newRecipe = new Recipe({
-      title: result.title,
-      cuisine: result.cuisine,
-      ingredients: result.ingredients,
-      instructions: result.instructions,
-      createdBy: user._id,
-    });
+  title: result.title,
+  cuisine: result.cuisine || req.body.cuisine,
+  ingredients: result.ingredients,
+  steps: normalizedSteps, // prefer steps, fallback to instructions if any
+  servingSuggestions: result.servingSuggestions || "No suggestions provided.",
+  nutrition: result.nutrition || {
+    total: { calories: "N/A", protein: "N/A", carbs: "N/A", fat: "N/A" },
+    perServing: { calories: "N/A", protein: "N/A", carbs: "N/A", fat: "N/A" },
+  },
+  createdBy: user._id,
+});
+console.log("AI Result:", JSON.stringify(result, null, 2));
+
 
     user.recipes.push(newRecipe._id);
     await user.save();

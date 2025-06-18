@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { toast } from "react-toastify";
 import RecipeCard from "./RecipeCard";
 import RecipeCardSkeleton from "./RecipeCardSkeleton"; // Import the skeleton
 import NoRecipeImage from "../images/no-favorite.png"; // Ensure this path is correct
 import axios from "axios";
-import { AddCircleOutline, CloseSharp } from "@mui/icons-material";
+import { AddCircleOutline, CloseSharp, PhotoCamera } from "@mui/icons-material";
 import { RecipeCreateUrl } from "../../API"; // Ensure this path is correct
 
 const RecipeForm = ({
@@ -21,6 +21,16 @@ const RecipeForm = ({
   const [cuisine, setCuisine] = useState("Indian"); // Default value
   const [language, setLanguage] = useState("English"); // Default value
   const [loading, setLoading] = useState(false); // Loading state for form submission
+  const [imagePreview, setImagePreview]=useState(null)
+  const [imageLoading, setImageLoading]=useState(null)
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const handleAddIngredient = (e) => {
     e.preventDefault(); // Prevent default form submission if inside form
@@ -42,6 +52,53 @@ const RecipeForm = ({
   const removeIngredient = (itemToRemove) => {
     setIngredientsList(ingredientsList.filter((item) => item !== itemToRemove));
   };
+
+const handleImageUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setImageLoading(true);
+  setImagePreview(URL.createObjectURL(file));
+
+  try {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onloadend = async () => {
+      const base64Image = reader.result.split(',')[1]; // Remove data:image/...;base64, prefix
+
+      const response = await axios.post(
+        'http://localhost:5001/auth/v1/api/recognize-ingredients',  // <-- Hardcoded backend URL here
+        { imageBase64: base64Image },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      const data = response.data;
+
+      if (data.ingredients && data.ingredients.length > 0) {
+        const newIngredients = data.ingredients
+          .map((item) => item.name)
+          .filter((item) => !ingredientsList.includes(item));
+
+        if (newIngredients.length > 0) {
+          setIngredientsList([...ingredientsList, ...newIngredients]);
+          toast.success("Ingredients recognized from image!");
+        } else {
+          toast.info("No new ingredients found.");
+        }
+      } else {
+        toast.info(data.message || "No ingredients recognized.");
+      }
+    };
+  } catch (err) {
+    toast.error("Failed to recognize ingredients.");
+    console.error(err);
+  } finally {
+    setImageLoading(false);
+  }
+};
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
@@ -137,6 +194,29 @@ const RecipeForm = ({
             >
               <AddCircleOutline fontSize="medium" />
             </button>
+          </div>
+
+          {/* Image Upload for Ingredient Recognition */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+              <PhotoCamera fontSize="small" />
+              Upload Image for Ingredient Recognition
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={loading || imageLoading}
+              className="border p-2 rounded-lg"
+            />
+            {imageLoading && <p className="text-sm text-blue-600">Recognizing ingredients...</p>}
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-32 h-32 object-cover mt-2 rounded border"
+              />
+            )}
           </div>
 
           {/* Display Added Ingredients as Tags */}

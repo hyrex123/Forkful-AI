@@ -78,6 +78,7 @@ const DetailScreen = () => {
         const response = await axios.get(`${GetRecipeByID}/${id}`, {
           headers: { ...(token && { Authorization: `Bearer ${token}` }) },
         });
+        console.log("Fetched Recipe Data:", response.data);
         if (response.data) {
           setRecipe(response.data);
         } else {
@@ -159,8 +160,12 @@ const DetailScreen = () => {
     cuisine = "N/A",
     ingredients = [],
     instructions = [],
+    steps=[]
   } = recipe;
+  const displayInstructions = instructions.length > 0 ? instructions : steps;
 
+console.log('Instructions to display:', displayInstructions);
+console.log('Instructions:',instructions)
   return (
     // 1. Outer container - Removed bg-slate-50. Keeps padding.
     <div className="min-h-screen p-4 md:p-8">
@@ -238,26 +243,57 @@ const DetailScreen = () => {
             Instructions
           </h2>
           <ol className="space-y-5">
-            {instructions.length > 0 ? (
-              instructions.map((instruction, index) => (
-                <li
-                  key={index}
-                  className="text-base text-slate-700 leading-relaxed flex"
-                >
-                  <span className="flex items-center justify-center h-6 w-6 bg-blue-500 text-white rounded-full font-bold text-sm mr-4 flex-shrink-0">
-                    {" "}
-                    {instruction.step ?? index + 1}{" "}
-                  </span>
-                  <p>{instruction.description}</p>
-                </li>
-              ))
-            ) : (
-              <li className="text-base text-slate-500 italic ml-10">
-                No instructions provided.
-              </li>
-            )}
-          </ol>
+    {displayInstructions.length > 0 ? (
+      displayInstructions.map((instruction, index) => (
+        <li key={index} className="text-base text-slate-700 leading-relaxed flex">
+          <span className="flex items-center justify-center h-6 w-6 bg-blue-500 text-white rounded-full font-bold text-sm mr-4 flex-shrink-0">
+            {instruction.step ?? index + 1}
+          </span>
+          <p>{instruction.instruction || instruction.description || "No detail provided"}</p>
+        </li>
+      ))
+    ) : (
+      <li className="text-base text-slate-500 italic ml-10">No instructions provided.</li>
+    )}
+  </ol>
         </div>
+        {/* Serving Suggestions */}
+{recipe.servingSuggestions && (
+  <div className="mb-8">
+    <h2 className="text-2xl font-semibold text-slate-700 mb-4">Serving Suggestions</h2>
+    <p className="text-base text-slate-700">{recipe.servingSuggestions}</p>
+  </div>
+)}
+
+{/* Nutrition Section */}
+{recipe.nutrition && (
+  <div className="mb-8">
+    <h2 className="text-2xl font-semibold text-slate-700 mb-4">Nutrition</h2>
+    <div className="grid grid-cols-2 gap-6">
+      {/* Total Nutrition */}
+      <div>
+        <h3 className="text-xl font-semibold mb-2">Total</h3>
+        <ul className="text-slate-700 space-y-1">
+          <li>Calories: {recipe.nutrition.total.calories}</li>
+          <li>Protein: {recipe.nutrition.total.protein}</li>
+          <li>Carbs: {recipe.nutrition.total.carbs}</li>
+          <li>Fat: {recipe.nutrition.total.fat}</li>
+        </ul>
+      </div>
+
+      {/* Per Serving Nutrition */}
+      <div>
+        <h3 className="text-xl font-semibold mb-2">Per Serving</h3>
+        <ul className="text-slate-700 space-y-1">
+          <li>Calories: {recipe.nutrition.perServing.calories}</li>
+          <li>Protein: {recipe.nutrition.perServing.protein}</li>
+          <li>Carbs: {recipe.nutrition.perServing.carbs}</li>
+          <li>Fat: {recipe.nutrition.perServing.fat}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+)}
       </div>{" "}
       {/* End Content width container */}
     </div> // End Outer container
