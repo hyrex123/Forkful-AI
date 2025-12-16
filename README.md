@@ -46,35 +46,6 @@ Clarifai AI API – Image → Ingredient recognition
 
 Google OTP Authenticator (Multi-factor authentication)
 --------------------------------------------------------------------------------------------------------------------------------------------
-Forkful-AI
-│
-├── client/                    # Frontend (React)
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Navbar.js
-│   │   │   ├── Footer.js
-│   │   │   ├── Login.js
-│   │   │   ├── Register.js
-│   │   │   ├── Profile.js
-│   │   │   ├── LocationDisplay.js
-│   │   │   ├── RecordMedia.js
-│   │   │   └── SOSButton.js
-│   │   ├── App.js
-│   │   ├── index.js
-│   │   ├── axiosConfig.js
-│   │   └── styles (CSS)
-│   ├── package.json
-│
-├── server/                    # Backend (Node + Express)
-│   ├── routes/
-│   ├── controllers/
-│   ├── models/
-│   └── server.js
-│
-├── .gitignore
-├── README.md
-└── package.json
--------------------------------------------------------------------------------------------------------------------------------------------
 ⚙️ How It Works (Workflow)
 
 1️⃣ User registers & logs in using Google OTP authentication
